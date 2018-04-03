@@ -1,10 +1,10 @@
 CXX	= g++
 
-CXXFLAGS= -std=c++11
+CXXFLAGS= -std=c++11 -g
 LDFLAGS	= 
 
 TARGET	= editor
-OBJS	= main.o
+OBJS	= main.o tui.o
 
 RUNFLAGS=test.txt
 
@@ -15,11 +15,16 @@ default:
 	make $(TARGET)
 
 run:
+	make
 	./$(TARGET) $(RUNFLAGS)
 
+full:
+	make clean
+	make run
+
 clean:
-	rm $(TARGET)
-	rm $(OBJS)
+	rm -f $(TARGET)
+	rm -f $(OBJS)
 
 $(TARGET):$(OBJS)
 	$(CXX) $(LDFLAGS) $^ -o $@
