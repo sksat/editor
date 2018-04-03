@@ -44,20 +44,35 @@ public:
 		clear();
 		for(size_t y=1;y<=term_height;y++){
 			for(size_t x=1;x<=term_width;x++){
-				move_cur(x, y);
-				printf("%c", get_data(x, y));
+				Tui::move_cursor(x, y);
+				if(x == this->x && y == this->y)
+					printf("\e[7m%c\e[0m", get_data(x,y));
+				else printf("%c", get_data(x, y));
 			}
 		}
 	}
 
-	void update_cur(){ move_cur(x, y); }
+	void move_cur(const size_t &x, const size_t &y){
+		this->x = (x<=term_width ? x : term_width);
+		this->y = (y<=term_height? y : term_height);
+		if(!this->x) this->x++;
+		if(!this->y) this->y++;
+		update_cur();
+	}
+	void move_cur_up(){   move_cur(this->x, this->y+1); }
+	void move_cur_down(){ move_cur(this->x, this->y-1); }
+	void move_cur_left(){ move_cur(this->x-1, this->y); }
+	void move_cur_right(){move_cur(this->x+1, this->y); }
+	void update_cur(){ Tui::move_cursor(x, y); }
 
 	static size_t get_width(){  update_term_size(); return term_width; }
 	static size_t get_height(){ update_term_size(); return term_height; }
-	static void move_cur(size_t x, size_t y){ printf("\e[%d;%dH", static_cast<int>(y), static_cast<int>(x)); }
+	static void move_cursor(const size_t &x, const size_t &y){
+		printf("\e[%d;%dH", static_cast<int>(y), static_cast<int>(x));
+	}
 	static void clear(){
 		printf("\e[2J");
-		move_cur(1, 1);
+		move_cursor(1, 1);
 	}
 	static void exit(){ exit_rawmode(); }
 private:

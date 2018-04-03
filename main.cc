@@ -49,10 +49,20 @@ try{
 	tui.draw();
 	for(;;){
 		char c = getchar();
-		if(c == 'q') break;
+		switch(c){
+		case 'q': goto fin;
+		case 'h': tui.move_cur_left(); break;
+		case 'j': tui.move_cur_down(); break;
+		case 'k': tui.move_cur_up(); break;
+		case 'l': tui.move_cur_right(); break;
+		default:
+			  //printf("%x", c);
+			  break;
+		}
 		tui.draw();
 	}
 
+fin:
 	Tui::clear();
 	return 0;
 }catch(...){
