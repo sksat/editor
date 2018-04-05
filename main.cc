@@ -36,6 +36,7 @@ namespace editor {
 		Key k;
 		k.is_print = k.alt = k.ctrl = k.fn = false;
 		char buf[5];
+		buf[1] = 0x00;
 		read(1, buf, 5);
 		char& c = buf[0];
 		if(c != 0x1b){
@@ -57,8 +58,11 @@ namespace editor {
 			k.c = 0x00;
 			return k;
 		}
+
 		char& c2 = buf[1];
-		if(0x27 <= c2 && c2 <= 0x5a){
+		if(c2 == 0x00){
+			err("Esc");
+		}else if(0x27 <= c2 && c2 <= 0x5a){
 			k.c = c2;
 			k.alt = true;
 			if(c2 == 0x4f && 0x50 <= buf[2] && buf[2] <= 0x53){
@@ -66,13 +70,29 @@ namespace editor {
 				k.fn = true;
 				k.c = buf[2] - 0x50 + 1;
 			}
-			return k;
 		}else if(c2 == 0x5b){
 			char& c3 = buf[2];
 			if(c3 == 0x31){
-
+				char& c4 = buf[3];
+				if(0x35 <= c4 && c4 <= 0x39){
+					k.fn = true;
+					k.c = c4 - 0x30;
+					if(c4 != 0x35) k.c--;
+					if(buf[4] != 0x7e){
+						if(buf[4] == 0x3b /*&& buf[5]==0x32 && buf[6]==0x7e*/){
+							// Shift
+						}else err("not implemented.");
+					}
+				}
 			}else if(c3 == 0x32){
-
+				char& c4 = buf[3];
+				if(c4 == 0x7e) err("Insert");
+				k.fn = true;
+				k.c = c4 - 0x27;
+				if(c4 == 0x34) k.c--;
+				if(buf[4] != 0x7e){
+					// Shift
+				}
 			}else{
 				switch(c3){
 				case 0x33: err("Delete"); break;
@@ -90,9 +110,12 @@ namespace editor {
 				}
 			}
 		}else{
-			k.alt = true;
-			k.c = c2;
+			if(0x5c <= c2 && c2 <= 0x7c){
+				k.alt = true;
+				k.c = c2;
+			}else err("not implemented.");
 		}
+		return k;
 	}
 }
 
