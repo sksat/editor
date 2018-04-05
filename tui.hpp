@@ -44,7 +44,6 @@ public:
 		clear();
 		for(size_t y=1;y<=term_height;y++){
 			for(size_t x=1;x<=term_width;x++){
-				Tui::move_cursor(x, y);
 				if(x == this->x && y == this->y)
 					printf("\e[7m%c\e[0m", get_data(x,y));
 				else printf("%c", get_data(x, y));
@@ -71,8 +70,8 @@ public:
 		printf("\e[%d;%dH", static_cast<int>(y), static_cast<int>(x));
 	}
 	static void clear(){
+		move_cursor(1,1);
 		printf("\e[2J");
-		move_cursor(1, 1);
 	}
 	static void exit(){ exit_rawmode(); }
 private:

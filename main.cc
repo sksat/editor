@@ -56,8 +56,8 @@ try{
 		case 'k': tui.move_cur_up(); break;
 		case 'l': tui.move_cur_right(); break;
 		default:
-			  //printf("%x", c);
-			  break;
+			//printf("%x", c);
+			break;
 		}
 		tui.draw();
 	}
