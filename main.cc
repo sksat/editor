@@ -1,7 +1,9 @@
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <list>
+#include <queue>
 #include "tui.hpp"
 
 namespace editor {
@@ -20,6 +22,76 @@ namespace editor {
 		std::string str;
 		while(getline(ifs, str)){
 			data.push_back(str);
+		}
+	}
+
+	struct Key {
+		bool is_print;
+		bool alt, ctrl;
+		bool fn;
+		char c;
+	};
+
+	Key read_key(){
+		Key k;
+		k.is_print = k.alt = k.ctrl = k.fn = false;
+		char buf[5];
+		read(1, buf, 5);
+		char& c = buf[0];
+		if(c != 0x1b){
+			k.c = c;
+			if(0x20 <= c && c <= 0x7f){
+				k.is_print = (c==0x7f ? true : false); // BackSpace以外なら普通の文字
+				return k;
+			}else if(0x00 < c && c < 0x1b){
+				switch(c){
+				case 0x09: k.is_print = true; break; // Tab
+				case 0x0d: break; // Enter
+				default:
+					k.ctrl = true;
+					k.c += 0x60;
+					break;
+				}
+				return k;
+			}
+			k.c = 0x00;
+			return k;
+		}
+		char& c2 = buf[1];
+		if(0x27 <= c2 && c2 <= 0x5a){
+			k.c = c2;
+			k.alt = true;
+			if(c2 == 0x4f && 0x50 <= buf[2] && buf[2] <= 0x53){
+				k.alt = false;
+				k.fn = true;
+				k.c = buf[2] - 0x50 + 1;
+			}
+			return k;
+		}else if(c2 == 0x5b){
+			char& c3 = buf[2];
+			if(c3 == 0x31){
+
+			}else if(c3 == 0x32){
+
+			}else{
+				switch(c3){
+				case 0x33: err("Delete"); break;
+				case 0x35: err("PgUp");   break;
+				case 0x36: err("PgDown"); break;
+				case 0x41: err("↑ ");     break;
+				case 0x42: err("↓ ");     break;
+				case 0x43: err("→ ");     break;
+				case 0x44: err("← ");     break;
+				case 0x46: err("End");    break;
+				case 0x48: err("Home");   break;
+				default:
+					   err("not implemented.");
+					   break;
+				}
+			}
+		}else{
+			k.alt = true;
+			k.c = c2;
 		}
 	}
 }
@@ -47,7 +119,19 @@ try{
 	}
 
 	tui.draw();
+
+	std::queue<Key> key_queue;
+
 	for(;;){
+		key_queue.push(editor::read_key());
+		auto& k = key_queue.back();
+		if(k.ctrl) printf("Ctrl+");
+		if(k.alt) printf("Alt+");
+		if(k.fn) printf("F%d\n", (int)k.c);
+		else if(k.c) printf("%c\n", k.c);
+
+		if(k.c == 'q') break;
+/*
 		char c = getchar();
 		switch(c){
 		case 'q': goto fin;
@@ -59,7 +143,8 @@ try{
 			//printf("%x", c);
 			break;
 		}
-		tui.draw();
+*/
+//		tui.draw();
 	}
 
 fin:
