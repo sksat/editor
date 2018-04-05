@@ -35,9 +35,9 @@ namespace editor {
 	Key read_key(){
 		Key k;
 		k.is_print = k.alt = k.ctrl = k.fn = false;
-		char buf[5];
+		char buf[7];
 		buf[1] = 0x00;
-		read(1, buf, 5);
+		read(1, buf, 7);
 		char& c = buf[0];
 		if(c != 0x1b){
 			k.c = c;
@@ -79,9 +79,23 @@ namespace editor {
 					k.c = c4 - 0x30;
 					if(c4 != 0x35) k.c--;
 					if(buf[4] != 0x7e){
-						if(buf[4] == 0x3b /*&& buf[5]==0x32 && buf[6]==0x7e*/){
+						if(buf[4] == 0x3b && buf[5]==0x32 && buf[6]==0x7e){
 							// Shift
 						}else err("not implemented.");
+					}
+				}else if(c4 == 0x3b && buf[4] == 0x32){
+					switch(buf[5]){
+					case 0x41: err("Shift+↑ ");
+					case 0x42: err("Shift+↓ ");
+					case 0x43: err("Shift+→ ");
+					case 0x44: err("Shift+← ");
+					case 0x50: err("Shift+F1");
+					case 0x51: err("Shift+F2");
+					case 0x52: err("Shift+F3");
+					case 0x53: err("Shift+F4");
+					default:
+						err("not implemented.");
+						break;
 					}
 				}
 			}else if(c3 == 0x32){
