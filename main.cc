@@ -41,22 +41,24 @@ try{
 	std::list<std::string> data;
 	if(!filename.empty()) read_file(filename, data);
 
-//	tui.print(2, 3, "hello");
-
 	size_t line = 1;
 	for(const string &str : data){
 		tui.print(1, line, str);
 		line++;
 	}
 
-	tui.draw();
-
 	std::queue<Keyboard::Key> key_queue;
 
 	for(;;){
+		tui.draw();
+
 		key_queue.push(Keyboard::read_key());
 		auto& k = key_queue.back();
-//		printf("%s\n", Keyboard::key2str(k).c_str());
+
+		if(!k.c){
+			printf("%s\n", Keyboard::key2str(k).c_str());
+			break;
+		}
 
 		if(k.is_print){
 			switch(k.c){
@@ -65,6 +67,8 @@ try{
 			case 'j': tui.move_cur_down(); break;
 			case 'k': tui.move_cur_up(); break;
 			case 'l': tui.move_cur_right(); break;
+			default:
+				break;
 			}
 		}
 		switch(k){
@@ -76,8 +80,6 @@ try{
 		default:
 			break;
 		}
-
-		tui.draw();
 	}
 
 fin:
