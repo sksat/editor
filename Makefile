@@ -4,7 +4,7 @@ CXXFLAGS= -std=c++11 -g
 LDFLAGS	= 
 
 TARGET	= editor
-OBJS	= main.o tui.o
+OBJS	= main.o tui.o keyboard.o
 
 RUNFLAGS=test.txt
 
