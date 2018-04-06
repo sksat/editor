@@ -11,7 +11,7 @@ public:
 		data = std::vector<char>(get_height()*get_width(), ' ');
 //		printf("height: %d, width: %d, data: %d", (int)get_height(), (int)get_width(), (int)data.size());
 //		getchar();
-		term_width = 123;
+//		term_width = 123;
 	}
 
 	~Tui(){
@@ -58,8 +58,8 @@ public:
 		if(!this->y) this->y++;
 		update_cur();
 	}
-	void move_cur_up(){   move_cur(this->x, this->y+1); }
-	void move_cur_down(){ move_cur(this->x, this->y-1); }
+	void move_cur_up(){   move_cur(this->x, this->y-1); }
+	void move_cur_down(){ move_cur(this->x, this->y+1); }
 	void move_cur_left(){ move_cur(this->x-1, this->y); }
 	void move_cur_right(){move_cur(this->x+1, this->y); }
 	void update_cur(){ Tui::move_cursor(x, y); }
