@@ -57,22 +57,27 @@ public:
 		fflush(0);
 	}
 
-	void move_cur(const size_t &x, const size_t &y){
-		this->x = (x<=term_width ? x : term_width);
-		this->y = (y<=term_height? y : term_height);
-		if(!this->x) this->x++;
-		if(!this->y) this->y++;
-		update_cur();
+	void move_cursor(const size_t &x, const size_t &y, const bool &redraw){
+		if(redraw){
+			move_cursor_pos(this->x, this->y);
+			printf("%c", get_data(this->x, this->y));
+		}
+		move_cursor_pos(x, y);
+		printf("\e[7m%c\e[0m", get_data(x, y));
+		this->x = x;
+		this->y = y;
 	}
-	void move_cur_up(){   move_cur(this->x, this->y-1); }
-	void move_cur_down(){ move_cur(this->x, this->y+1); }
-	void move_cur_left(){ move_cur(this->x-1, this->y); }
-	void move_cur_right(){move_cur(this->x+1, this->y); }
-	void update_cur(){ Tui::move_cursor(x, y); }
+	void move_cursor(const size_t &x, const size_t &y){
+		move_cursor(x, y, true);
+	}
+	bool move_cur_up(){   if(y==1){          return false; }else{ move_cursor(x, y-1); return true; } }
+	bool move_cur_down(){ if(y==term_height){return false; }else{ move_cursor(x, y+1); return true; } }
+	bool move_cur_left(){ if(x==1){          return false; }else{ move_cursor(x-1, y); return true; } }
+	bool move_cur_right(){if(x==term_width){ return false; }else{ move_cursor(x+1, y); return true; } }
 
 	static size_t get_width(){  update_term_size(); return term_width; }
 	static size_t get_height(){ update_term_size(); return term_height; }
-	static void move_cursor(const size_t &x, const size_t &y){
+	static void move_cursor_pos(const size_t &x, const size_t &y){
 		printf("\e[%d;%dH", static_cast<int>(y), static_cast<int>(x));
 	}
 	static void clear(){
